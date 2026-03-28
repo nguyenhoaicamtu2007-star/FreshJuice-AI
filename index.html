@@ -6,7 +6,7 @@
 
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: Arial;
       background: linear-gradient(135deg, #ff9a9e, #fad0c4);
       display: flex;
       justify-content: center;
@@ -17,48 +17,40 @@
 
     .container {
       background: white;
-      padding: 30px;
+      padding: 25px;
       border-radius: 20px;
-      width: 350px;
+      width: 360px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      text-align: center;
     }
 
     h2 {
+      text-align: center;
       color: #ff5e62;
-      margin-bottom: 10px;
     }
 
     p {
-      margin-top: 15px;
       font-weight: bold;
+      margin-top: 12px;
     }
 
-    select, button {
+    select, input, button {
       width: 100%;
       padding: 10px;
-      margin-top: 8px;
+      margin-top: 5px;
       border-radius: 10px;
       border: 1px solid #ddd;
-      font-size: 14px;
     }
 
     button {
       background: #ff5e62;
       color: white;
-      border: none;
       font-weight: bold;
+      margin-top: 15px;
       cursor: pointer;
-      transition: 0.3s;
     }
 
     button:hover {
       background: #e14b50;
-    }
-
-    .result-box {
-      margin-top: 20px;
-      text-align: left;
     }
 
     .item {
@@ -66,124 +58,140 @@
       padding: 10px;
       border-radius: 10px;
       margin-top: 10px;
-      transition: 0.3s;
     }
 
-    .item:hover {
-      transform: scale(1.03);
-      background: #ffe1e1;
+    .price {
+      float: right;
+      color: #ff5e62;
+      font-weight: bold;
+    }
+
+    .title-result {
+      margin-top: 20px;
+      font-weight: bold;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
-    <h2>🍹 FreshJuice AI</h2>
+<div class="container">
+  <h2>FreshJuice AI</h2>
 
-    <p>Chọn khẩu vị:</p>
-    <select id="taste">
-      <option value="ngot">Ngọt</option>
-      <option value="chua">Chua</option>
-      <option value="thanh">Thanh mát</option>
-    </select>
+  <p>Khẩu vị</p>
+  <select id="taste">
+    <option>Ngọt</option>
+    <option>Chua</option>
+    <option>Thanh mát</option>
+  </select>
 
-    <p>Mục tiêu của bạn:</p>
-    <select id="goal">
-      <option value="depda">Đẹp da</option>
-      <option value="giamcan">Giảm cân</option>
-      <option value="khang">Tăng đề kháng</option>
-      <option value="mun">Giảm mụn</option>
-      <option value="giaikhat">Giải khát</option>
-    </select>
+  <p>Mục tiêu sức khỏe</p>
+  <select id="goal">
+    <option value="depda">Đẹp da</option>
+    <option value="giamcan">Giảm cân</option>
+    <option value="khang">Tăng đề kháng</option>
+    <option value="giaikhat">Giải khát</option>
+  </select>
 
-    <p>Thời điểm uống:</p>
-    <select id="time">
-      <option value="ngay">Ban ngày</option>
-      <option value="toi">Buổi tối</option>
-    </select>
+  <p>Thời điểm sử dụng</p>
+  <select id="time">
+    <option value="ngay">Ban ngày</option>
+    <option value="toi">Buổi tối</option>
+  </select>
 
-    <button onclick="goiY()">Xem gợi ý</button>
+  <p>Mức giá mong muốn</p>
+  <select id="price">
+    <option value="all">Tất cả</option>
+    <option value="20">20K</option>
+    <option value="25">25K</option>
+    <option value="30">30K</option>
+    <option value="35">35K</option>
+  </select>
 
-    <div class="result-box" id="result"></div>
-  </div>
+  <p>Dị ứng (ví dụ: cam, dứa)</p>
+  <input type="text" id="allergy">
 
-  <script>
-    function goiY() {
-      let goal = document.getElementById("goal").value;
-      let time = document.getElementById("time").value;
-      let html = "";
+  <button onclick="goiY()">Gợi ý</button>
 
-      function item(rank, text) {
-        return `<div class="item">${rank} ${text}</div>`;
+  <div class="title-result">Kết quả</div>
+  <div id="result"></div>
+</div>
+
+<script>
+function goiY() {
+  let goal = document.getElementById("goal").value;
+  let time = document.getElementById("time").value;
+  let priceFilter = document.getElementById("price").value;
+
+  let allergyInput = document.getElementById("allergy").value.toLowerCase();
+  let allergies = allergyInput.split(",").map(a => a.trim());
+
+  let menu = [];
+
+  function isAllowed(name) {
+    for (let a of allergies) {
+      if (a && name.toLowerCase().includes(a)) {
+        return false;
       }
-
-      if (goal === "khang") {
-        if (time === "ngay") {
-          html =
-            item("🥇", "Cam + Gừng → tăng đề kháng") +
-            item("🥈", "Cam + Cà rốt → bổ sung vitamin") +
-            item("🥉", "Dứa + Táo → thanh lọc cơ thể");
-        } else {
-          html =
-            item("🥇", "Táo + Mật ong → nhẹ nhàng buổi tối") +
-            item("🥈", "Lê + Gừng → ấm cơ thể") +
-item("🥉", "Cam + Táo → dễ uống");
-        }
-      }
-
-      else if (goal === "mun") {
-        if (time === "ngay") {
-          html =
-            item("🥇", "Dứa + Cam → giảm mụn") +
-            item("🥈", "Cà rốt + Táo → đẹp da") +
-            item("🥉", "Cam + Dưa leo → mát gan");
-        } else {
-          html =
-            item("🥇", "Dưa leo + Táo → giảm mụn ban đêm") +
-            item("🥈", "Cần tây + Táo → detox") +
-            item("🥉", "Lê + Dưa leo → dịu cơ thể");
-        }
-      }
-
-      else if (goal === "giamcan") {
-        if (time === "ngay") {
-          html =
-            item("🥇", "Chanh + Cần tây → đốt mỡ") +
-            item("🥈", "Táo + Cần tây → ít calo") +
-            item("🥉", "Dưa leo + Chanh → thanh lọc");
-        } else {
-          html =
-            item("🥇", "Cần tây + Táo → nhẹ bụng") +
-            item("🥈", "Dưa leo + Táo → ít năng lượng") +
-            item("🥉", "Lê + Cần tây → dễ tiêu");
-        }
-      }
-
-      else if (goal === "depda") {
-        html =
-          item("🥇", "Dâu + Cam → sáng da") +
-          item("🥈", "Cà rốt + Cam → vitamin A") +
-          item("🥉", "Dưa hấu + Táo → cấp nước");
-      }
-
-      else if (goal === "giaikhat") {
-        html =
-          item("🥇", "Dưa hấu + Bạc hà → giải nhiệt") +
-          item("🥈", "Cam + Dứa → tươi mát") +
-          item("🥉", "Dưa leo + Chanh → thanh lọc");
-      }
-
-      else {
-        html =
-          item("🥇", "Mix trái cây") +
-          item("🥈", "Táo + Cam") +
-          item("🥉", "Dứa + Dưa hấu");
-      }
-
-      document.getElementById("result").innerHTML = html;
     }
-  </script>
+    return true;
+  }
+
+  function add(name, price) {
+    if (isAllowed(name)) {
+      if (priceFilter === "all" || price === priceFilter + "K") {
+menu.push({ name, price });
+      }
+    }
+  }
+
+  // Gợi ý
+  if (goal === "khang") {
+    add("Cam + Gừng", "20K");
+    add("Cam + Cà rốt + Mật ong", "30K");
+    add("Dứa + Táo + Cam", "35K");
+  }
+
+  else if (goal === "giamcan") {
+    if (time === "ngay") {
+      add("Cần tây + Chanh", "20K");
+      add("Táo + Cần tây + Dưa leo", "30K");
+    } else {
+      add("Cần tây + Táo", "20K");
+      add("Dưa leo + Táo + Bạc hà", "30K");
+    }
+  }
+
+  else if (goal === "depda") {
+    add("Dâu + Cam", "20K");
+    add("Cà rốt + Cam + Táo", "30K");
+    add("Dưa hấu + Táo + Dứa", "30K");
+  }
+
+  else if (goal === "giaikhat") {
+    add("Dưa hấu + Bạc hà", "20K");
+    add("Cam + Dứa + Táo", "30K");
+    add("Dưa leo + Chanh + Bạc hà", "25K");
+  }
+
+  let html = "";
+
+  if (menu.length === 0) {
+    html = `<div class="item">Không có lựa chọn phù hợp</div>`;
+  } else {
+    menu.forEach(item => {
+      html += `
+        <div class="item">
+          ${item.name}
+          <span class="price">${item.price}</span>
+        </div>
+      `;
+    });
+  }
+
+  document.getElementById("result").innerHTML = html;
+}
+</script>
 
 </body>
 </html>
